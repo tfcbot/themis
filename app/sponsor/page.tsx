@@ -1,17 +1,12 @@
-import Nav from "@/components/Nav";
+import type { Metadata } from "next";
+import SponsorPageClient from "./SponsorPageClient";
+
+export const metadata: Metadata = {
+  title: "Sponsor — Themis",
+  description:
+    "Reach people choosing AI tools in the Max Explains AI directory. Limited sponsor slots — enquire to book.",
+};
 
 export default function SponsorPage() {
-  return (
-    <>
-      <Nav />
-      <main className="mx-auto max-w-5xl px-6 py-12">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-          Sponsor
-        </h1>
-        <p className="mt-3 text-slate-600 dark:text-slate-300">
-          Sponsor detail pages will appear here in a later milestone.
-        </p>
-      </main>
-    </>
-  );
+  return <SponsorPageClient />;
 }
