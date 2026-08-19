@@ -9,6 +9,10 @@
  */
 
 import type * as hello from "../hello.js";
+import type * as lib_listingDocuments from "../lib/listingDocuments.js";
+import type * as lib_listingValidation from "../lib/listingValidation.js";
+import type * as listings from "../listings.js";
+import type * as seed from "../seed.js";
 
 import type {
   ApiFromModules,
@@ -18,6 +22,10 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   hello: typeof hello;
+  "lib/listingDocuments": typeof lib_listingDocuments;
+  "lib/listingValidation": typeof lib_listingValidation;
+  listings: typeof listings;
+  seed: typeof seed;
 }>;
 
 /**
