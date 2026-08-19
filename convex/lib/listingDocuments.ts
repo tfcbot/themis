@@ -22,3 +22,16 @@ export const slotConfigDocumentValidator = v.object({
   price: v.union(v.string(), v.null()),
   paymentsEnabled: v.boolean(),
 });
+
+export const railCardValidator = v.object({
+  listingId: v.id("listings"),
+  name: v.string(),
+  oneLiner: v.string(),
+  logoUrl: v.string(),
+  url: v.string(),
+});
+
+export const railOccupancyValidator = v.object({
+  cap: v.number(),
+  taken: v.number(),
+});

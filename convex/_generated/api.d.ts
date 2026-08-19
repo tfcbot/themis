@@ -14,6 +14,7 @@ import type * as hello from "../hello.js";
 import type * as lib_listingDocuments from "../lib/listingDocuments.js";
 import type * as lib_listingValidation from "../lib/listingValidation.js";
 import type * as listings from "../listings.js";
+import type * as rail from "../rail.js";
 import type * as seed from "../seed.js";
 import type * as slotConfig from "../slotConfig.js";
 
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   "lib/listingDocuments": typeof lib_listingDocuments;
   "lib/listingValidation": typeof lib_listingValidation;
   listings: typeof listings;
+  rail: typeof rail;
   seed: typeof seed;
   slotConfig: typeof slotConfig;
 }>;
