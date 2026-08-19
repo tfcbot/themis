@@ -1,6 +1,7 @@
 import { convexTest } from "convex-test";
 import { beforeEach, describe, expect, test } from "vitest";
 import { api, internal } from "../convex/_generated/api";
+import { assertAllowlistedAdminEmail } from "../convex/lib/auth";
 import schema from "../convex/schema";
 
 const modules = import.meta.glob("../convex/**/*.ts");
@@ -8,6 +9,29 @@ const ADMIN_EMAIL = "admin@example.com";
 
 beforeEach(() => {
   process.env.ADMIN_EMAIL = ADMIN_EMAIL;
+});
+
+describe("admin allowlist", () => {
+  test("accepts the configured admin email for sign-up and profile", () => {
+    expect(() => assertAllowlistedAdminEmail(ADMIN_EMAIL)).not.toThrow();
+    expect(() =>
+      assertAllowlistedAdminEmail("  ADMIN@EXAMPLE.COM  "),
+    ).not.toThrow();
+  });
+
+  test("rejects non-allowlisted emails during sign-up and profile", () => {
+    expect(() => assertAllowlistedAdminEmail("other@example.com")).toThrow(
+      "Unauthorized",
+    );
+  });
+
+  test("fails closed when ADMIN_EMAIL is not configured", () => {
+    delete process.env.ADMIN_EMAIL;
+
+    expect(() => assertAllowlistedAdminEmail(ADMIN_EMAIL)).toThrow(
+      "Admin access is not configured",
+    );
+  });
 });
 
 describe("admin publish/reject gate", () => {
