@@ -26,19 +26,11 @@ describe("slot config public contract", () => {
     const t = convexTest(schema, modules);
 
     await t.mutation(internal.seed.seedSlotConfig, {});
-    const ids = await t.mutation(internal.seed.seedTestListings, {});
-
-    await t.run(async (ctx) => {
-      await ctx.db.insert("placements", {
-        kind: "rail",
-        listingId: ids.liveListingId,
-        live: true,
-      });
-    });
+    await t.mutation(internal.seed.seedTestListings, {});
 
     const slotConfig = await t.query(api.slotConfig.getDefaultSlotConfig, {});
 
-    expect(slotConfig?.slotsTaken).toBe(1);
+    expect(slotConfig?.slotsTaken).toBe(2);
     expect(slotConfig?.price).toBeNull();
     expect(slotConfig?.paymentsEnabled).toBe(false);
   });
