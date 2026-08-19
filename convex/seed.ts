@@ -42,6 +42,7 @@ export const seedTestListings = internalMutation({
     pendingListingId: v.id("listings"),
     liveListingId: v.id("listings"),
     rejectedListingId: v.id("listings"),
+    liveRailPlacementId: v.id("placements"),
   }),
   handler: async (ctx) => {
     const pendingListingId = await ctx.db.insert("listings", {
@@ -74,10 +75,25 @@ export const seedTestListings = internalMutation({
       status: "rejected",
     });
 
+    const pendingRailPlacementId = await ctx.db.insert("placements", {
+      kind: "rail",
+      listingId: pendingListingId,
+      live: true,
+    });
+
+    const liveRailPlacementId = await ctx.db.insert("placements", {
+      kind: "rail",
+      listingId: liveListingId,
+      live: true,
+    });
+
+    void pendingRailPlacementId;
+
     return {
       pendingListingId,
       liveListingId,
       rejectedListingId,
+      liveRailPlacementId,
     };
   },
 });
@@ -128,7 +144,7 @@ export const seedForTests = internalMutation({
   handler: async (ctx) => {
     await upsertDefaultSlotConfig(ctx);
 
-    await ctx.db.insert("listings", {
+    const pendingListingId = await ctx.db.insert("listings", {
       name: "Pending Tool",
       category: "Automation",
       oneLiner: "Awaiting review before going live.",
@@ -138,7 +154,7 @@ export const seedForTests = internalMutation({
       status: "pending",
     });
 
-    await ctx.db.insert("listings", {
+    const liveListingId = await ctx.db.insert("listings", {
       name: "Live Tool",
       category: "Analytics",
       oneLiner: "Visible on the public directory.",
@@ -156,6 +172,18 @@ export const seedForTests = internalMutation({
       logoUrl: "https://example.com/rejected-logo.png",
       kind: "organic",
       status: "rejected",
+    });
+
+    await ctx.db.insert("placements", {
+      kind: "rail",
+      listingId: pendingListingId,
+      live: true,
+    });
+
+    await ctx.db.insert("placements", {
+      kind: "rail",
+      listingId: liveListingId,
+      live: true,
     });
 
     const liveListings = await ctx.db
