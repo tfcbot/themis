@@ -49,4 +49,35 @@ describe("validateListingInput", () => {
       }),
     ).toThrow("oneLiner must be at most 200 characters");
   });
+
+  test("accepts empty optional logoUrl", () => {
+    expect(
+      validateListingInput({
+        ...validInput,
+        logoUrl: "",
+      }),
+    ).toEqual({
+      ...validInput,
+      logoUrl: "",
+    });
+
+    expect(
+      validateListingInput({
+        ...validInput,
+        logoUrl: "   ",
+      }),
+    ).toEqual({
+      ...validInput,
+      logoUrl: "",
+    });
+  });
+
+  test("rejects invalid optional logoUrl when provided", () => {
+    expect(() =>
+      validateListingInput({
+        ...validInput,
+        logoUrl: "http://example.com/logo.png",
+      }),
+    ).toThrow("logoUrl must use HTTPS");
+  });
 });

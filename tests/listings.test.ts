@@ -51,6 +51,47 @@ describe("listings public contract", () => {
     expect(publicListing).toBeNull();
   });
 
+  test("creates pending listings without optional logoUrl", async () => {
+    const t = convexTest(schema, modules);
+
+    const listingId = await t.mutation(api.listings.createPendingListing, {
+      name: "Logoless Submission",
+      category: "Automation",
+      oneLiner: "No logo provided.",
+      url: "https://example.com/logoless",
+      logoUrl: "",
+      kind: "organic",
+    });
+
+    const liveListings = await t.query(api.listings.listLiveListings, {});
+    expect(liveListings.some((listing) => listing._id === listingId)).toBe(
+      false,
+    );
+
+    const storedListing = await t.run(async (ctx) => {
+      return await ctx.db.get("listings", listingId);
+    });
+    expect(storedListing).toMatchObject({
+      status: "pending",
+      logoUrl: "",
+    });
+  });
+
+  test("rejects invalid https url on createPendingListing", async () => {
+    const t = convexTest(schema, modules);
+
+    await expect(
+      t.mutation(api.listings.createPendingListing, {
+        name: "Bad URL",
+        category: "Ops",
+        oneLiner: "Should fail.",
+        url: "http://example.com/insecure",
+        logoUrl: "",
+        kind: "organic",
+      }),
+    ).rejects.toThrow("url must use HTTPS");
+  });
+
   test("keeps slot config enquire-only", async () => {
     const t = convexTest(schema, modules);
 

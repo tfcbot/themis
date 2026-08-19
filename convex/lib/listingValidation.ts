@@ -43,18 +43,35 @@ function assertHttpsUrl(value: string, fieldName: string, maxLength: number): vo
   }
 }
 
+function assertOptionalHttpsUrl(
+  value: string,
+  fieldName: string,
+  maxLength: number,
+): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return "";
+  }
+
+  assertHttpsUrl(value, fieldName, maxLength);
+  return trimmed;
+}
+
 export function validateListingInput(input: ListingInput): ListingInput {
   assertNonEmptyString(input.name, "name", LISTING_LIMITS.name);
   assertNonEmptyString(input.category, "category", LISTING_LIMITS.category);
   assertNonEmptyString(input.oneLiner, "oneLiner", LISTING_LIMITS.oneLiner);
   assertHttpsUrl(input.url, "url", LISTING_LIMITS.url);
-  assertHttpsUrl(input.logoUrl, "logoUrl", LISTING_LIMITS.logoUrl);
 
   return {
     name: input.name.trim(),
     category: input.category.trim(),
     oneLiner: input.oneLiner.trim(),
     url: input.url.trim(),
-    logoUrl: input.logoUrl.trim(),
+    logoUrl: assertOptionalHttpsUrl(
+      input.logoUrl,
+      "logoUrl",
+      LISTING_LIMITS.logoUrl,
+    ),
   };
 }
