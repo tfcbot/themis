@@ -1,3 +1,4 @@
+import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
@@ -19,6 +20,7 @@ export const placementKindValidator = v.union(
 );
 
 export default defineSchema({
+  ...authTables,
   listings: defineTable({
     name: v.string(),
     category: v.string(),
