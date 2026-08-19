@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import AdvertiseTile from "@/components/AdvertiseTile";
+import DirectoryListings from "@/components/directory/DirectoryListings";
 import RailCard, { type RailCardData } from "@/components/RailCard";
 
 function RailColumn({ cards }: { cards: RailCardData[] }) {
@@ -43,6 +44,14 @@ function RailHeader({ occupancyCopy }: { occupancyCopy: string }) {
   );
 }
 
+function RailLoadingPlaceholder() {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+      Loading sponsor rail…
+    </div>
+  );
+}
+
 function splitCards(cards: RailCardData[]) {
   const midpoint = Math.ceil(cards.length / 2);
   return {
@@ -55,54 +64,46 @@ export default function DirectoryContent() {
   const cards = useQuery(api.rail.listRailCards);
   const occupancy = useQuery(api.rail.getRailOccupancy);
 
-  if (cards === undefined || occupancy === undefined) {
-    return (
-      <div className="mx-auto max-w-7xl px-6 py-10">
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-          Loading directory…
-        </div>
-      </div>
-    );
-  }
-
-  const { left, right } = splitCards(cards);
-  const occupancyCopy = `${occupancy.taken} of ${occupancy.cap} taken`;
+  const railLoading = cards === undefined || occupancy === undefined;
+  const railCards = cards ?? [];
+  const { left, right } = splitCards(railCards);
+  const occupancyCopy = occupancy
+    ? `${occupancy.taken} of ${occupancy.cap} taken`
+    : "…";
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
-      <section
-        aria-label="Sponsor rail"
-        className="mb-8 lg:hidden"
-      >
+      <section aria-label="Sponsor rail" className="mb-8 lg:hidden">
         <RailHeader occupancyCopy={occupancyCopy} />
-        <RailStrip cards={cards} />
+        {railLoading ? <RailLoadingPlaceholder /> : <RailStrip cards={railCards} />}
       </section>
 
       <div className="lg:grid lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)_minmax(0,16rem)] lg:items-start lg:gap-8">
-        <aside
-          aria-label="Left sponsor rail"
-          className="hidden lg:block"
-        >
+        <aside aria-label="Left sponsor rail" className="hidden lg:block">
           <RailHeader occupancyCopy={occupancyCopy} />
-          <RailColumn cards={left} />
+          {railLoading ? (
+            <RailLoadingPlaceholder />
+          ) : (
+            <RailColumn cards={left} />
+          )}
         </aside>
 
         <main className="min-w-0">
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-            Directory
-          </h1>
-          <p className="mt-3 text-slate-600 dark:text-slate-300">
-            Browse live sponsor listings. Side rails highlight capped sponsor
-            slots — book via enquire only.
-          </p>
+          <DirectoryListings />
         </main>
 
         <aside
           aria-label="Right sponsor rail"
           className="hidden space-y-3 lg:block"
         >
-          <RailColumn cards={right} />
-          <AdvertiseTile />
+          {railLoading ? (
+            <RailLoadingPlaceholder />
+          ) : (
+            <>
+              <RailColumn cards={right} />
+              <AdvertiseTile />
+            </>
+          )}
         </aside>
       </div>
     </div>
